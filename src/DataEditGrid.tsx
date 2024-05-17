@@ -23,6 +23,26 @@ const countries : Countries = {
  '3' : 'Brazil'
 }
 
+type Home = {
+    id:number,
+    value: string,
+    age :number,
+}
+
+const diff = (old:Home[], newData:Home[]) : boolean => {
+    let diff = false;
+
+    for (const newItem of newData) {
+        const oldItem = old.find(item => item.id === newItem.id);
+        if (oldItem && oldItem.value !== newItem.value) {
+          diff = true;
+          break;
+        }
+        
+      }
+    return diff;
+}
+
 export default function StartEditButtonGrid() {
   const columns: GridColDef[] = [
     
