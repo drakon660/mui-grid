@@ -5,11 +5,23 @@ import {
   GridRenderCellParams,
   useGridApiContext,
   DataGridPro,
-  GridColDef
+  GridColDef,
+  GridValueGetter,
+  GridRowModel
 } from "@mui/x-data-grid-pro";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
+
+type Countries = {
+    [key: string]: string;
+  };
+
+const countries : Countries = {
+ '1' : 'France',
+ '2' : 'Spain',
+ '3' : 'Brazil'
+}
 
 export default function StartEditButtonGrid() {
   const columns: GridColDef[] = [
@@ -19,9 +31,17 @@ export default function StartEditButtonGrid() {
       {
         field: "country",
         type: "singleSelect",
-        width: 120,
-        valueOptions: ["France", "Spain", "Brazil"],
-        editable: true,
+        width: 120,        
+        editable: true, 
+        valueOptions: Object.keys(countries).map(key => ({
+            value: key,
+            label: countries[key]
+          })),
+       
+        valueGetter: (params: string) => {
+            console.log(params);
+            return countries[params as string] || ''
+        },
         renderCell: (params: GridRenderCellParams) => <CustomComponent {...params} />
       }  
   ];
@@ -69,30 +89,30 @@ const rows: GridRowsProp = [
     id: 1,
     name: "John Doe",
     age: 25,
-    country: "France"
+    country: "1"
   },
   {
     id: 2,
     name: "Jane Smith",
     age: 36,
-    country: "France"
+    country: "1"
   },
   {
     id: 3,
     name: "Alice Johnson",
     age: 19,
-    country: "Brazil"
+    country: "3"
   },
   {
     id: 4,
     name: "Michael Brown",
     age: 28,
-    country: "Brazil"
+    country: "3"
   },
   {
     id: 5,
     name: "Emily Davis",
     age: 23,
-    country: "Spain"
+    country: "2"
   }
 ];
