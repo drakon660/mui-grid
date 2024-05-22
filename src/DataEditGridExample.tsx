@@ -81,8 +81,7 @@ const CustomSelect2: React.FC<GridRenderCellParams> = ({ id, value, api, field, 
 
     const updatedRow = { ...row, [field]: newValue, id: id };
     api.updateRows([updatedRow]);
-    console.log(updatedRow);  
-    debugger;  
+    console.log(updatedRow);      
     const isValid = await api.setEditCellValue({ id, field, value: newValue });
     console.log(isValid);
     // if (isValid) api.stopCellEditMode({ id, field });    
@@ -161,7 +160,7 @@ const DataEditGridExample: React.FC = () => {
   };
 
   const handleProcessRowUpdate = (newRow: RowDataWithId, oldRow: RowDataWithId) => {
-    const updatedRows = rows.map((row) => (row.id === oldRow.id ? newRow : row));
+    const updatedRows = rows.map((row) => (row.id === newRow.id ? oldRow : row));
     setRows(updatedRows);
 
     // Log changed data
@@ -183,7 +182,8 @@ const DataEditGridExample: React.FC = () => {
         rows={rows}
         apiRef={apiRef}
         columns={columns}
-        editMode="cell"
+        // editMode="cell"
+        editMode="row"
         getRowId={getRowId}        
         onCellKeyDown={(params, event) => {
           console.log('cell key down', params, event);

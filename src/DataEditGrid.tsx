@@ -12,6 +12,7 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 
 type Countries = {
     [key: string]: string;
@@ -38,7 +39,7 @@ const diff = (old:Home[], newData:Home[]) : boolean => {
           diff = true;
           break;
         }
-        
+
       }
     return diff;
 }
@@ -50,7 +51,7 @@ export default function StartEditButtonGrid() {
       { field: "age", headerName: "Age", type: "number", editable: true },
       {
         field: "country",
-        type: "singleSelect",
+        //type: "singleSelect",
         width: 120,        
         editable: true, 
         valueOptions: Object.keys(countries).map(key => ({
@@ -62,7 +63,8 @@ export default function StartEditButtonGrid() {
             console.log(params);
             return countries[params as string] || ''
         },
-        renderCell: (params: GridRenderCellParams) => <CustomComponent {...params} />
+        renderCell: (params: GridRenderCellParams) => <CustomComponent {...params} />,
+        renderEditCell: (params: GridRenderCellParams) => <CustomSelectComponent {...params} />
       }  
   ];
 
@@ -76,8 +78,44 @@ export default function StartEditButtonGrid() {
   );
 }
 
+const CustomSelectComponent: React.FC<GridRenderCellParams> = (params) => {
+    const apiRef = useGridApiContext();
+    const { id, field, value } = params;
+  
+    const handleChange = async (event: SelectChangeEvent<string>) => {
+      const newValue = event.target.value as string;
+      apiRef.current.setEditCellValue({ id, field, value: newValue });
+      apiRef.current.stopCellEditMode({ id, field });
+    };
+  
+    return (
+      <Select
+        value={value || '1'}
+        onChange={handleChange}
+        fullWidth
+      >
+        {Object.entries(countries).map(([key, label]) => (
+          <MenuItem key={key} value={key}>
+            {label}
+          </MenuItem>
+        ))}
+      </Select>
+    );
+  };
+
 const CustomComponent: React.FC<GridRenderCellParams> = (params) => {
-  const apiRef = useGridApiContext();
+   const  {api,id, field} = params;
+   const apiRef = useGridApiContext();
+   const [open, setOpen] = React.useState(false);
+
+  const handleClick = (event:React.SyntheticEvent) => {
+    event.stopPropagation();
+    api.startCellEditMode({ id, field });
+    setTimeout(() => {
+      setOpen(true);
+    }, 0);
+  };
+
 
   return (
     <Box
@@ -90,14 +128,17 @@ const CustomComponent: React.FC<GridRenderCellParams> = (params) => {
     >
       <div>{params.value}</div>
       <IconButton size="small" sx={{ padding: 0 }} tabIndex={-1}>
-        <ArrowDropDownIcon
-          onClick={(event) => {
-            event.stopPropagation(); // to not select row
-            apiRef.current.startCellEditMode({
-              id: params.id,
-              field: params.field
-            });
-          }}
+        <ArrowDropDownIcon onClick={(event)=>handleClick(event)}
+        
+        //   onClick={(event) => {
+
+        //     // to not select row
+        //     handleClick();
+        //     // apiRef.current.startCellEditMode({
+        //     //   id: params.id,
+        //     //   field: params.field
+        //     // });
+        //   }}
         />
       </IconButton>
     </Box>
