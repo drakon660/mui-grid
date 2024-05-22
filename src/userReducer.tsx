@@ -14,6 +14,50 @@ const initialState: State = {
   isDisabled: true,
 };
 
+
+let updatesMap = new Map(updates.map(item => [item.accountNumber, item.code]));
+
+list.forEach(item => {
+  if (updatesMap.has(item.accountNumber)) {
+    item.code = updatesMap.get(item.accountNumber)!;
+  }
+});
+
+list.forEach(item => {
+  let update = updates.find(update => update.accountNumber === item.accountNumber);
+  if (update) {
+    item.code = update.code;
+  }
+});
+
+interface Account{
+  accountNumber:number,
+  text:string
+  code: string
+}
+
+let list:Account[] = [{
+accountNumber:1,
+text:'sample1',
+code:'abc'
+},{
+  accountNumber:2,
+  text:'sample2',
+  code:'efg'
+  },{
+    accountNumber:3,
+    text:'sample3',
+    code:'jkl'
+    }]
+
+let updates:Account[] = [{
+  accountNumber:2,
+  text:'sample2',
+  code:'111'
+  }]
+
+  updates.with
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'ADD_ITEM': {
